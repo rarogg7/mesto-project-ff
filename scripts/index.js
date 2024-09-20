@@ -17,18 +17,32 @@ const cardButtonDelete = document.querySelector(".card__delete-button");
 
 // @todo: Функция создания карточки
 
-initialCards.forEach((item) => {
-  const cardElement = templateCard.cloneNode(true);
+function createCard(item, deleteCard) {
+  const cardElement = templateCard
+    .querySelector(".places__item")
+    .cloneNode(true);
+
+  // Тело карточки, что отрисовывается
   cardElement.querySelector(".card__title").textContent = item.name;
   cardElement.querySelector(".card__image").src = item.link;
   cardElement.querySelector(".card__image").alt = item.name;
+
+  // Кнопка удаления карточки
+  const deleteCardButton = cardElement.querySelector(".card__delete-button");
+  deleteCardButton.addEventListener("click", deleteCard);
+
+  return cardElement;
+}
+
+// @todo: Отрисовка карточи на странице
+
+initialCards.forEach((item) => {
+  const cardElement = createCard(item, deleteCard);
   placeCardList.append(cardElement);
 });
 
 // @todo: Функция удаления карточки
 
-document.querySelector("body").onclick = (ev) => {
-  if (ev.target.className != "card__delete-button") return;
-  ev.target.closest(".card").remove();
-  // item.remove();
-};
+function deleteCard(el) {
+  el.target.closest(".card").remove();
+}
