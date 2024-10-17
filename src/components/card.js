@@ -1,19 +1,8 @@
-// Импортируем из других файлов
-
-import { openModal } from "./modal.js";
-import { popupTypeImage, popupCaption, popupImage } from "../pages/index.js";
-
-// Экспортируем в другие файлы
-
-export { createCard, deleteCard, likeCard, cardPopup };
-
-// Темплейт карточки
-
-const templateCard = document.querySelector("#card-template").content;
-
 // Функция создания карточки
 
-function createCard(item, deleteCard) {
+function createCard(cardData, deleteCard, likeCard, cardPopup) {
+  const templateCard = document.querySelector("#card-template").content;
+
   const cardElement = templateCard
     .querySelector(".places__item")
     .cloneNode(true);
@@ -21,12 +10,12 @@ function createCard(item, deleteCard) {
   const deleteCardButton = cardElement.querySelector(".card__delete-button");
   const cardLikeButton = cardElement.querySelector(".card__like-button");
   const cardImage = cardElement.querySelector(".card__image");
-
+  const cardTitle = cardElement.querySelector(".card__title");
   // Тело карточки, что отрисовывается
 
-  cardElement.querySelector(".card__title").textContent = item.name;
-  cardElement.querySelector(".card__image").src = item.link;
-  cardElement.querySelector(".card__image").alt = item.name;
+  cardTitle.textContent = cardData.name;
+  cardImage.src = cardData.link;
+  cardImage.alt = cardData.name;
 
   // Кнопка удаления карточки
 
@@ -34,15 +23,11 @@ function createCard(item, deleteCard) {
 
   // Ставим лайк
 
-  cardLikeButton.addEventListener("click", () => {
-    likeCard(cardLikeButton);
-  });
+  cardLikeButton.addEventListener("click", likeCard);
 
   // Увеличиваем картинку
 
-  cardImage.addEventListener("click", () => {
-    cardPopup(cardImage);
-  });
+  cardImage.addEventListener("click", () => cardPopup(cardData));
 
   return cardElement;
 }
@@ -53,17 +38,12 @@ function deleteCard(cardElement) {
   cardElement.target.closest(".card").remove();
 }
 
-// Функция где открываем картинку во весь экран
-
-function cardPopup(cardImage) {
-  popupCaption.textContent = cardImage.alt;
-  popupImage.src = cardImage.src;
-  popupImage.alt = cardImage.alt;
-  openModal(popupTypeImage);
-}
-
 // Ставим лайк карточке
 
-function likeCard (element) {
-  element.classList.toggle("card__like-button_is-active");
-};
+function likeCard(element) {
+  element.target.classList.toggle("card__like-button_is-active");
+}
+
+// Экспортируем в другие файлы
+
+export { createCard, deleteCard, likeCard };
