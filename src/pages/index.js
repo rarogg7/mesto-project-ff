@@ -41,17 +41,6 @@ const popupInputTypeCardUrl = popupNewCardForm.querySelector(
   ".popup__input_type_url"
 );
 
-// Функция отрисовки карточек на странице
-
-function renderCard() {
-  initialCards.forEach((cardData) => {
-    const cardElement = createCard(cardData, deleteCard, likeCard, cardPopup);
-    placeCardList.append(cardElement);
-  });
-}
-
-renderCard(initialCards); // Вызываем функцию и рисуем на странице данные карточки
-
 // Окно добавления карточки на страницу
 
 profileAddButton.addEventListener("click", () => {
@@ -110,18 +99,15 @@ popupFormEditProfile.addEventListener("submit", handleProfileFormSubmit);
 function handleNewCardSubmit(evt) {
   evt.preventDefault();
 
-  const newCardData = {
-    name: popupInputTypeCardName.value,
-    link: popupInputTypeCardUrl.value,
-  };
+  const cardName = popupInputTypeCardName.value;
+  const cardUrl = popupInputTypeCardUrl.value;
 
   placeCardList.prepend(
-    createCard(newCardData, deleteCard, cardPopup, likeCard)
+    createCard({ name: cardName, link: cardUrl }, deleteCard, cardPopup)
   );
 
-  popupNewCardForm.reset(); // Очищаем
-
   closeModal(popupTypeNewCard);
+  popupNewCardForm.reset(); // Очищаем
 }
 
 // Слушатель
@@ -131,8 +117,20 @@ popupNewCardForm.addEventListener("submit", handleNewCardSubmit);
 // Функция где открываем картинку во весь экран
 
 function cardPopup(cardData) {
-  popupCaption.textContent = cardData.name;
   popupImage.src = cardData.link;
   popupImage.alt = cardData.name;
+  popupCaption.textContent = cardData.name;
+
   openModal(popupTypeImage);
 }
+
+// Функция отрисовки карточек на странице
+
+function renderCard() {
+  initialCards.forEach((cardData) => {
+    const cardElement = createCard(cardData, deleteCard, cardPopup);
+    placeCardList.append(cardElement);
+  });
+}
+
+renderCard(); // Вызываем функцию и рисуем на странице данные карточки
