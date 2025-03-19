@@ -1,4 +1,5 @@
 export { clearValidation, enableValidation };
+
 // 1. Сообщение об ошибке: показываем ошибку
 function showInputError(
   formElement,
@@ -27,17 +28,6 @@ function hideInputError(
   inputElement.setCustomValidity("");
 }
 
-// 7. Очищаем ошибки валидации
-function clearValidation(
-  formElement,
-  { inputSelector, inputErrorClass, errorClass }
-) {
-  const inputList = Array.from(formElement.querySelectorAll(inputSelector));
-  inputList.forEach((inputElement) => {
-    hideInputError(formElement, inputElement, inputErrorClass, errorClass);
-  });
-}
-
 // 2. Функция проверки валидности формы
 function checkInputValidity(
   formElement,
@@ -62,17 +52,23 @@ function checkInputValidity(
     hideInputError(formElement, inputElement, inputErrorClass, errorClass);
   }
 }
-
 // 5. Обработчик события ввода
 function setEventListeners(
   formElement,
   inputSelector,
+  submitButtonSelector,
+  inactiveButtonClass,
   inputErrorClass,
   errorClass
 ) {
   const inputList = Array.from(formElement.querySelectorAll(inputSelector));
+  const buttonElement = formElement.querySelector(submitButtonSelector);
+  toggleButtonState(inputList, buttonElement, inactiveButtonClass);
+
   inputList.forEach((inputElement) => {
-    inputElement.addEventListener("input", function () {
+    inputElement.addEventListener("input", () => {
+      toggleButtonState(inputList, buttonElement, inactiveButtonClass);
+
       checkInputValidity(
         formElement,
         inputElement,
@@ -81,6 +77,21 @@ function setEventListeners(
       );
     });
   });
+}
+
+function hasInvalidInput(inputList) {
+  return inputList.some((inputElement) => !inputElement.validity.valid);
+}
+
+// 4. Проверяем изменение состояния кнопки
+function toggleButtonState(inputList, buttonElement, inactiveButtonClass) {
+  if (hasInvalidInput(inputList)) {
+    buttonElement.disabled = true;
+    buttonElement.classList.add(inactiveButtonClass);
+  } else {
+    buttonElement.disabled = false;
+    buttonElement.classList.remove(inactiveButtonClass);
+  }
 }
 
 // 6. Добавляем валидацию
@@ -93,7 +104,12 @@ function enableValidation({
   errorClass,
 }) {
   const formList = Array.from(document.querySelectorAll(formSelector));
+
   formList.forEach((formElement) => {
+    formElement.addEventListener("submit", (event) => {
+      event.preventDefault();
+    });
+
     setEventListeners(
       formElement,
       inputSelector,
@@ -103,4 +119,25 @@ function enableValidation({
       errorClass
     );
   });
+}
+
+// 7. Очищаем ошибки валидации
+function clearValidation(
+  formElement,
+  {
+    inputSelector,
+    submitButtonSelector,
+    inactiveButtonClass,
+    inputErrorClass,
+    errorClass,
+  }
+) {
+  const inputList = Array.from(formElement.querySelectorAll(inputSelector));
+  const buttonElement = formElement.querySelector(submitButtonSelector);
+
+  inputList.forEach((inputElement) => {
+    hideInputError(formElement, inputElement, inputErrorClass, errorClass);
+  });
+
+  toggleButtonState(inputList, buttonElement, inactiveButtonClass);
 }

@@ -104,7 +104,6 @@
               id="avatar-input"
               type="url"
               placeholder="Ссылка на картинку"
-              pattern="^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$"
               data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
               required
             />
@@ -176,10 +175,7 @@
     <template id="card-template">
       <li class="places__item card">
         <img class="card__image" src="" alt="" />
-        <button
-          type="button"
-          class="card__delete-button card__delete-button_hide"
-        ></button>
+        <button type="button" class="card__delete-button"></button>
         <div class="card__description">
           <h2 class="card__title"></h2>
           <div class="card__like">

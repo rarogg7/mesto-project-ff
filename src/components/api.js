@@ -49,7 +49,7 @@ export const updateUserInfo = (name, description) => {
     method: "PATCH",
     headers: config.headers,
     body: JSON.stringify({
-      name,
+      name: name,
       about: description,
     }),
   }).then((result) => {

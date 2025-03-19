@@ -12,7 +12,6 @@ import {
 import { clearValidation, enableValidation } from "../components/validation.js";
 
 // Попапы
-// const avatarUrlInput = document.querySelector(".popup__input_type_avatar");
 const placeCardList = document.querySelector(".places__list");
 const popups = document.querySelectorAll(".popup");
 const popupCloseButtons = document.querySelectorAll(".popup__close");
@@ -27,9 +26,7 @@ const profileTitle = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
 const profileImage = document.querySelector(".profile__image");
 const popupTypeEditAvatar = document.querySelector(".popup_type_edit-avatar");
-const profileAvatarEditButton = document.querySelector(
-  ".profile__avatar-button"
-);
+const editAvatarInput = document.querySelector(".popup__input_type_avatar");
 
 // Форма редактирования аватара
 const editAvatarForm = document.forms["image-profile"]; // form: аватар "name: image-profile"
@@ -37,8 +34,8 @@ const avatarInput = editAvatarForm.elements["avatar"]; // input: аватар "n
 
 // Форма редактирования профиля
 const editProfileForm = document.forms["edit-profile"]; // form: Редактировать профиль "name: edit-profile"
-const nameInput = editProfileForm.elements["name"];
-const jobInput = editProfileForm.elements["description"];
+const nameInput = editProfileForm.elements["name"]; // Вводим имя пользователя
+const jobInput = editProfileForm.elements["description"]; // Тут уже описание
 
 // Форма добавления новой карточки
 const editNewCardForm = document.forms["new-place"]; // form: Новое место "name: new-place"
@@ -46,7 +43,7 @@ const cardName = editNewCardForm.elements["new-place-name"];
 const cardLink = editNewCardForm.elements["new-place-link"];
 
 // Переменная ID
-let userId;
+let userId = "";
 
 // Конфиг валидации
 const validationConfig = {
@@ -61,10 +58,10 @@ const validationConfig = {
 enableValidation(validationConfig, renderSaveTextButton);
 
 // Функция где открываем картинку во весь экран
-function openFullImagePopup(link, title) {
-  popupImage.src = link;
-  popupImage.alt = title;
-  popupCaption.textContent = title;
+export function openFullImagePopup(image) {
+  popupImage.src = image.link;
+  popupImage.alt = image.name;
+  popupCaption.textContent = image.name;
 
   openModal(popupTypeImage);
 }
@@ -126,12 +123,19 @@ const renderSaveTextButton = (isLoading, button) => {
 function editProfileFormSubmit(event) {
   event.preventDefault();
 
-  profileTitle.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
+  const title = nameInput.value;
+  const description = jobInput.value;
 
-  renderSaveTextButton(true, popupButtonEdit);
-
-  closeModal(popupTypeEdit);
+  updateUserInfo(title, description)
+    .then(() => {
+      profileTitle.textContent = title;
+      profileDescription.textContent = description;
+      renderSaveTextButton(true, popupTypeEdit);
+      closeModal(popupTypeEdit);
+    })
+    .catch((error) => {
+      console.error("Не удалось обновить данные профайла", error);
+    });
 }
 
 // Слушатель заполнения формы пользователя
@@ -143,14 +147,8 @@ function newCardForm(event) {
 
   addNewCard(cardName.value, cardLink.value)
     .then((newCardInfo) => {
-      const newCard = createCard(
-        newCardInfo,
-        userId,
-        deleteCard,
-        likeCard,
-        openFullImagePopup
-      );
-      placeCardList.prepend(newCard);
+      const newCard = createCard(newCardInfo, openFullImagePopup, userId);
+      placeCardList.append(newCard);
       closeModal(popupTypeNewCard);
       editNewCardForm.reset();
     })
@@ -163,43 +161,33 @@ function newCardForm(event) {
 editNewCardForm.addEventListener("submit", newCardForm);
 
 // Отрисовываем карточки с сервера
-Promise.all([getInitialCards(), getUserInfo()])
-  .then((userInfo, initialCards) => {
-    profileTitle.textContent = userInfo[1].name;
-    profileDescription.textContent = userInfo[1].about;
-    profileImage.style.backgroundImage = `url(${userInfo[1].avatar})`;
+const myPromise = [getUserInfo(), getInitialCards()];
+
+Promise.all(myPromise)
+  .then(function ([userInfo, cardList]) {
+    profileTitle.textContent = userInfo.name;
+    profileDescription.textContent = userInfo.about;
+    profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
     userId = userInfo._id;
 
-    if (!Array.isArray(initialCards)) {
-      console.log("initialCards не является массивом! :/");
-      return;
-    }
-
-    initialCards.forEach((cardInfo) => {
-      const newCard = createCard(
-        cardInfo,
-        userId,
-        deleteCard,
-        likeCard,
-        openFullImagePopup
-      );
-      placeCardList.append(newCard);
+    cardList.forEach((cardInfo) => {
+      const newCard = createCard(cardInfo, openFullImagePopup, userId);
+      placeCardList.prepend(newCard);
     });
   })
   .catch((error) => {
-    console.log(`Не могу понять где ошибка ${error}`);
+    console.log(`Не удалось загрузить данные с сервера ${error}`);
   });
 
 // Меняем аватар
 function updateNewAvatar(event) {
   event.preventDefault();
-  renderSaveTextButton(true, profileAvatarEditButton);
 
-  editAvatar(avatarInput.value)
+  editAvatar(editAvatarInput.value)
     .then((avatar) => {
-      profileImage.style.backgroundImage = `url(${avatar.avatar})`;
-      editAvatarForm.reset();
+      profileImage.style.backgroundImage = `url(${avatar})`;
       closeModal(popupTypeEditAvatar);
+      editAvatarForm.reset();
     })
     .catch((error) => {
       console.log("Ошибка при обновлении аватара:", error);
