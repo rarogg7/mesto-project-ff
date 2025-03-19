@@ -161,9 +161,9 @@ function newCardForm(event) {
 editNewCardForm.addEventListener("submit", newCardForm);
 
 // Отрисовываем карточки с сервера
-const myPromise = [getUserInfo(), getInitialCards()];
+// const myPromise = [getUserInfo(), getInitialCards()];
 
-Promise.all(myPromise)
+Promise.all([getUserInfo(), getInitialCards()])
   .then(function ([userInfo, cardList]) {
     profileTitle.textContent = userInfo.name;
     profileDescription.textContent = userInfo.about;
