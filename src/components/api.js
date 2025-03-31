@@ -20,13 +20,9 @@ export const getUserInfo = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     method: "GET",
     headers: config.headers,
-  })
-    .then((result) => {
-      return checkResponse(result);
-    })
-    .catch((error) => {
-      console.error("Ошибка загрузки данных пользователя:", error);
-    });
+  }).then((result) => {
+    return checkResponse(result);
+  });
 };
 
 // 4. Загрузка карточек с сервера
@@ -34,13 +30,9 @@ export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     method: "GET",
     headers: config.headers,
-  })
-    .then((result) => {
-      return checkResponse(result);
-    })
-    .catch((error) => {
-      console.error("Ошибка загрузки данных с сервера:", error);
-    });
+  }).then((result) => {
+    return checkResponse(result);
+  });
 };
 
 // 5. Редактирование профиля
@@ -66,13 +58,9 @@ export const addNewCard = (name, link) => {
       name,
       link,
     }),
-  })
-    .then((result) => {
-      return checkResponse(result);
-    })
-    .catch((error) => {
-      console.error("Ошибка загрузки данных на сервер:", error);
-    });
+  }).then((result) => {
+    return checkResponse(result);
+  });
 };
 
 // 8. Удаление карточки
@@ -90,14 +78,18 @@ export function likeCardServer(cardId) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: "PUT",
     headers: config.headers,
-  }).then(checkResponse);
+  }).then((result) => {
+    return checkResponse(result);
+  });
 }
 
 export function unlikeCardServer(cardId) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: "DELETE",
     headers: config.headers,
-  }).then(checkResponse);
+  }).then((result) => {
+    return checkResponse(result);
+  });
 }
 
 // 10. Обновление аватара пользователя
@@ -108,11 +100,7 @@ export const editAvatar = (avatar) => {
     body: JSON.stringify({
       avatar,
     }),
-  })
-    .then((result) => {
-      return checkResponse(result);
-    })
-    .catch((error) => {
-      console.error("Не удалось обновить фото профиля:", error);
-    });
+  }).then((result) => {
+    return checkResponse(result);
+  });
 };

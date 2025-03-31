@@ -8,7 +8,7 @@ import {
   editAvatar,
   addNewCard,
 } from "../components/api.js";
-
+import { renderSaveTextButton } from "./utils.js";
 import { clearValidation, enableValidation } from "../components/validation.js";
 
 // Попапы
@@ -68,9 +68,6 @@ export function openFullImagePopup(image) {
 
 // Окно добавления карточки на страницу
 profileAddButton.addEventListener("click", () => {
-  clearValidation(editNewCardForm, validationConfig);
-  editNewCardForm.reset();
-
   openModal(popupTypeNewCard);
 });
 
@@ -110,15 +107,6 @@ popups.forEach((element) => {
   });
 });
 
-// Отрисовываем состояние кнопки сохранить
-const renderSaveTextButton = (isLoading, button) => {
-  if (isLoading) {
-    button.textContent = "Сохранение...";
-  } else {
-    button.textContent = "Сохранить";
-  }
-};
-
 // Форма профиля
 function editProfileFormSubmit(event) {
   event.preventDefault();
@@ -148,6 +136,7 @@ function newCardForm(event) {
   addNewCard(cardName.value, cardLink.value)
     .then((newCardInfo) => {
       const newCard = createCard(newCardInfo, openFullImagePopup, userId);
+      clearValidation(editNewCardForm, validationConfig);
       placeCardList.append(newCard);
       closeModal(popupTypeNewCard);
       editNewCardForm.reset();
