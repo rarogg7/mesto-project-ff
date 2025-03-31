@@ -1,8 +1,8 @@
 // 1. Подключаюсь к серверу
 const config = {
-  baseUrl: "https://nomoreparties.co/v1/wff-cohort-25",
+  baseUrl: "https://nomoreparties.co/v1/wff-cohort-35",
   headers: {
-    authorization: "fdd7000f-822a-4754-b25a-f3d99797b450",
+    authorization: "bc58507a-89a2-4ee2-8c62-f9f770fcad89",
     "Content-Type": "application/json",
   },
 };
