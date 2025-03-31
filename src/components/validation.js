@@ -35,12 +35,13 @@ function checkInputValidity(
   inputErrorClass,
   errorClass
 ) {
+  if (inputElement.validity.patternMismatch) {
+    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
+  } else {
+    inputElement.setCustomValidity("");
+  }
+
   if (!inputElement.validity.valid) {
-    if (inputElement.validity.patternMismatch) {
-      inputElement.setCustomValidity(inputElement.dataset.errorMessage);
-    } else {
-      inputElement.setCustomValidity("");
-    }
     showInputError(
       formElement,
       inputElement,
@@ -51,32 +52,6 @@ function checkInputValidity(
   } else {
     hideInputError(formElement, inputElement, inputErrorClass, errorClass);
   }
-}
-// 5. Обработчик события ввода
-function setEventListeners(
-  formElement,
-  inputSelector,
-  submitButtonSelector,
-  inactiveButtonClass,
-  inputErrorClass,
-  errorClass
-) {
-  const inputList = Array.from(formElement.querySelectorAll(inputSelector));
-  const buttonElement = formElement.querySelector(submitButtonSelector);
-  toggleButtonState(inputList, buttonElement, inactiveButtonClass);
-
-  inputList.forEach((inputElement) => {
-    inputElement.addEventListener("input", () => {
-      toggleButtonState(inputList, buttonElement, inactiveButtonClass);
-
-      checkInputValidity(
-        formElement,
-        inputElement,
-        inputErrorClass,
-        errorClass
-      );
-    });
-  });
 }
 
 function hasInvalidInput(inputList) {
@@ -94,6 +69,33 @@ function toggleButtonState(inputList, buttonElement, inactiveButtonClass) {
   }
 }
 
+// 5. Обработчик события ввода
+function setEventListeners(
+  formElement,
+  inputSelector,
+  submitButtonSelector,
+  inactiveButtonClass,
+  inputErrorClass,
+  errorClass
+) {
+  const inputList = Array.from(formElement.querySelectorAll(inputSelector));
+  const buttonElement = formElement.querySelector(submitButtonSelector);
+
+  toggleButtonState(inputList, buttonElement, inactiveButtonClass);
+
+  inputList.forEach((inputElement) => {
+    inputElement.addEventListener("input", () => {
+      checkInputValidity(
+        formElement,
+        inputElement,
+        inputErrorClass,
+        errorClass
+      );
+      toggleButtonState(inputList, buttonElement, inactiveButtonClass);
+    });
+  });
+}
+
 // 6. Добавляем валидацию
 function enableValidation({
   formSelector,
@@ -103,7 +105,7 @@ function enableValidation({
   inputErrorClass,
   errorClass,
 }) {
-  const formList = Array.from(document.querySelectorAll(formSelector));
+  const formList = document.querySelectorAll(formSelector);
 
   formList.forEach((formElement) => {
     formElement.addEventListener("submit", (event) => {

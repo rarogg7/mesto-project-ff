@@ -137,7 +137,7 @@ function newCardForm(event) {
     .then((newCardInfo) => {
       const newCard = createCard(newCardInfo, openFullImagePopup, userId);
       clearValidation(editNewCardForm, validationConfig);
-      placeCardList.append(newCard);
+      placeCardList.prepend(newCard);
       closeModal(popupTypeNewCard);
       editNewCardForm.reset();
     })
