@@ -183,7 +183,7 @@ Promise.all([getUserInfo(), getInitialCards()])
 
     cardList.forEach((cardInfo) => {
       const newCard = createCard(cardInfo, openFullImagePopup, userId);
-      placeCardList.prepend(newCard);
+      placeCardList.append(newCard);
     });
   })
   .catch((error) => {
