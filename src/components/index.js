@@ -71,6 +71,8 @@ export function openFullImagePopup(image) {
 
 // Окно добавления карточки на страницу
 profileAddButton.addEventListener("click", () => {
+  clearValidation(editNewCardForm, validationConfig);
+
   openModal(popupTypeNewCard);
 });
 
@@ -144,6 +146,7 @@ editProfileForm.addEventListener("submit", editProfileFormSubmit);
 // Функция добавления карточки
 function newCardForm(event) {
   event.preventDefault();
+
   renderSaveTextButton({
     buttonElement: editNewCardFormButton,
     isLoading: true,
@@ -157,6 +160,7 @@ function newCardForm(event) {
 
       clearValidation(editNewCardForm, validationConfig);
       editNewCardForm.reset();
+
       closeModal(popupTypeNewCard);
     })
     .catch((error) => {
