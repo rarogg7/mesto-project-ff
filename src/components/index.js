@@ -31,16 +31,19 @@ const editAvatarInput = document.querySelector(".popup__input_type_avatar");
 // Форма редактирования аватара
 const editAvatarForm = document.forms["image-profile"]; // form: аватар "name: image-profile"
 const avatarInput = editAvatarForm.elements["avatar"]; // input: аватар "name: avatar"
+const editAvatarFormButton = editAvatarForm.querySelector(".popup__button");
 
 // Форма редактирования профиля
 const editProfileForm = document.forms["edit-profile"]; // form: Редактировать профиль "name: edit-profile"
 const nameInput = editProfileForm.elements["name"]; // Вводим имя пользователя
 const jobInput = editProfileForm.elements["description"]; // Тут уже описание
+const editProfileFormButton = editProfileForm.querySelector(".popup__button");
 
 // Форма добавления новой карточки
 const editNewCardForm = document.forms["new-place"]; // form: Новое место "name: new-place"
 const cardName = editNewCardForm.elements["new-place-name"];
 const cardLink = editNewCardForm.elements["new-place-link"];
+const editNewCardFormButton = editNewCardForm.querySelector(".popup__button");
 
 // Переменная ID
 let userId = "";
@@ -75,6 +78,7 @@ profileAddButton.addEventListener("click", () => {
 profileEditButton.addEventListener("click", () => {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
+
   clearValidation(editProfileForm, validationConfig);
 
   openModal(popupTypeEdit);
@@ -110,7 +114,10 @@ popups.forEach((element) => {
 // Форма профиля
 function editProfileFormSubmit(event) {
   event.preventDefault();
-
+  renderSaveTextButton({
+    buttonElement: editProfileFormButton,
+    isLoading: true,
+  });
   const title = nameInput.value;
   const description = jobInput.value;
 
@@ -118,11 +125,16 @@ function editProfileFormSubmit(event) {
     .then(() => {
       profileTitle.textContent = title;
       profileDescription.textContent = description;
-      renderSaveTextButton(true, popupTypeEdit);
       closeModal(popupTypeEdit);
     })
     .catch((error) => {
       console.error("Не удалось обновить данные профайла", error);
+    })
+    .finally(() => {
+      renderSaveTextButton({
+        buttonElement: editProfileFormButton,
+        isLoading: false,
+      });
     });
 }
 
@@ -132,17 +144,29 @@ editProfileForm.addEventListener("submit", editProfileFormSubmit);
 // Функция добавления карточки
 function newCardForm(event) {
   event.preventDefault();
+  renderSaveTextButton({
+    buttonElement: editNewCardFormButton,
+    isLoading: true,
+  });
 
   addNewCard(cardName.value, cardLink.value)
     .then((newCardInfo) => {
       const newCard = createCard(newCardInfo, openFullImagePopup, userId);
-      clearValidation(editNewCardForm, validationConfig);
+
       placeCardList.prepend(newCard);
-      closeModal(popupTypeNewCard);
+
+      clearValidation(editNewCardForm, validationConfig);
       editNewCardForm.reset();
+      closeModal(popupTypeNewCard);
     })
     .catch((error) => {
       console.log("Ошибка при добавлении новой карточки:", error);
+    })
+    .finally(() => {
+      renderSaveTextButton({
+        buttonElement: editNewCardFormButton,
+        isLoading: false,
+      });
     });
 }
 
@@ -150,8 +174,6 @@ function newCardForm(event) {
 editNewCardForm.addEventListener("submit", newCardForm);
 
 // Отрисовываем карточки с сервера
-// const myPromise = [getUserInfo(), getInitialCards()];
-
 Promise.all([getUserInfo(), getInitialCards()])
   .then(function ([userInfo, cardList]) {
     profileTitle.textContent = userInfo.name;
@@ -171,6 +193,10 @@ Promise.all([getUserInfo(), getInitialCards()])
 // Меняем аватар
 function updateNewAvatar(event) {
   event.preventDefault();
+  renderSaveTextButton({
+    buttonElement: editAvatarFormButton,
+    isLoading: true,
+  });
 
   editAvatar(editAvatarInput.value)
     .then((avatar) => {
@@ -180,6 +206,12 @@ function updateNewAvatar(event) {
     })
     .catch((error) => {
       console.log("Ошибка при обновлении аватара:", error);
+    })
+    .finally(() => {
+      renderSaveTextButton({
+        buttonElement: editAvatarFormButton,
+        isLoading: false,
+      });
     });
 }
 

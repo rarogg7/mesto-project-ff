@@ -25,7 +25,6 @@ function hideInputError(
   inputElement.classList.remove(inputErrorClass);
   errorElement.classList.remove(errorClass);
   errorElement.textContent = "";
-  inputElement.setCustomValidity("");
 }
 
 // 2. Функция проверки валидности формы

@@ -1,9 +1,9 @@
 // Отрисовываем состояние кнопки сохранить
-const renderSaveTextButton = (isLoading, button) => {
+const renderSaveTextButton = ({isLoading, buttonElement}) => {
   if (isLoading) {
-    button.textContent = "Сохранение...";
+    buttonElement.textContent = "Сохранение...";
   } else {
-    button.textContent = "Сохранить";
+    buttonElement.textContent = "Сохранить";
   }
 };
 
